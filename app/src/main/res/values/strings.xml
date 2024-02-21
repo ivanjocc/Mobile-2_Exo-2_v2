@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">exo2_v2</string>
+    <string name="temperature_value">Temperature: %1$.2f°C</string>
+</resources>
