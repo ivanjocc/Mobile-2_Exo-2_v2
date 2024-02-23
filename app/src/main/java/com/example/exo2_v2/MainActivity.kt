@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.view.View // Importación faltante para View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
@@ -15,6 +16,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private var temperatureSensor: Sensor? = null
     private lateinit var temperatureTextView: TextView
     private lateinit var colorTextView: TextView
+
+    private val minTemp = -10f
+    private val maxTemp = 40f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +48,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             if (it.sensor.type == Sensor.TYPE_AMBIENT_TEMPERATURE) {
                 val temperature = it.values[0]
                 temperatureTextView.text = getString(R.string.temperature_value, temperature)
-                val color = interpolateColor(temperature)
+
+                val color = getColorForTemperature(temperature, minTemp, maxTemp)
+
                 colorTextView.setBackgroundColor(color)
             }
         }
@@ -54,8 +60,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         // nothing here
     }
 
-    private fun interpolateColor(temperature: Float): Int {
-        val normalizedTemperature = (temperature + 10) / 30
-        return ColorUtils.blendARGB(Color.BLUE, Color.RED, normalizedTemperature)
+    private fun getColorForTemperature(temperature: Float, minTemp: Float, maxTemp: Float): Int {
+        val normalizedTemperature = (temperature - minTemp) / (maxTemp - minTemp)
+        return ColorUtils.blendARGB(Color.BLUE, Color.RED, normalizedTemperature.coerceIn(0f, 1f))
     }
 }
